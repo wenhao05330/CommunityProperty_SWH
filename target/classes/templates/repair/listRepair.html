@@ -1,0 +1,177 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link th:href="@{/js/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/js/bootstrap/table/bootstrap-table.min.css}" rel="stylesheet">
+    <title></title>
+</head>
+<body>
+<!-- 查询区域 -->
+<div class="form-div">
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-info">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        菜单
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <!-- 查询表单 -->
+                    <form id="queryForm" class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <!-- 1.省-->
+                            <label for="queryLocation" class="col-sm-1 control-label">住宅地址:</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="queryLocation" name="queryLocation">
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-10">
+                                    <button id="queryBtn" type="button" class="btn btn-primary">查询</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-10">
+                                    <button id="analysis" type="button" class="btn btn-primary" onclick="toAnalysis()">数据分析</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 列表展示 -->
+<table id="data">
+
+</table>
+
+<!-- 修改房源模态框 -->
+<!-- Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改业主信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form"
+                      th:action="@{/owner/update}"
+                      method="post">
+
+                    <!-- 用于更新数据的id值 -->
+                    <input type="hidden" id="ownerId" name="id">
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">业主姓名</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" class="form-control" id="name" name="name" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location" class="col-sm-2 control-label">住宅地址</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" class="form-control" id="location" name="location" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idno" class="col-sm-2 control-label">身份证号</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" class="form-control" id="idno" name="idno" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone" class="col-sm-2 control-label">手机号</label>
+                        <div class="col-sm-6 input-group">
+                            <input type="text" class="form-control" id="phone" name="phone" >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-6">
+                            <button type="submit" class="btn btn-primary">更新</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap/js/bootstrap.min.js}"></script>
+<!-- 表单校验插件 -->
+<script th:src="@{/js/jquery/validate/jquery.validate.min.js}"></script>
+<!-- 表单校验插件汉化js -->
+<script th:src="@{/js/jquery/validate/messages_zh.min.js}"></script>
+<!-- bootstrap-table的两个js文件 -->
+<script th:src="@{/js/bootstrap/table/bootstrap-table.min.js}"></script>
+<script th:src="@{/js/bootstrap/table/bootstrap-table-zh-CN.min.js}"></script>
+
+<script th:inline="javascript">
+    const path = [[${#request.getContextPath()}]];
+
+    $(function () {
+        // 列表查询
+        Et.queryList();
+
+        $('#queryBtn').click(function(){
+            $('#data').bootstrapTable("refresh");
+        });
+
+    });
+
+    function toAnalysis(){
+        window.location.href = path + "/owner/to_analysis";
+    }
+
+
+    let Et = {
+        // 1.列表查询
+        queryList: function() {
+            $('#data').bootstrapTable({
+                url: path + '/owner/listRepair',
+                pagination: true,
+                sidePagination: 'server',
+                pageNumber: 1,
+                pageSize: 5,
+                pageList: [5, 10, 15, 20],
+                queryParamsType: 'undefined',
+                paginationPreText: '上一页',
+                paginationNextText: '下一页',
+                queryParams: function(params) {
+                    // 单选按钮
+                    let queryLocation = $("#queryLocation").val();
+
+                    let newParam = {
+                        pageNum: params.pageNumber,
+                        pageSize: params.pageSize,
+                        queryLocation: queryLocation || ''
+                    };
+                    return newParam;
+                },
+                columns: [
+                    {field: 'location', title: '住宅地址'},
+                    {field: 'remark', title: '物件描述'},
+                    {field: 'cost', title: '维修费用/元'},
+                    {field: 'publish_time', title: '录入时间'}
+                ]
+            });
+        }
+    };
+
+</script>
+</body>
+</html>

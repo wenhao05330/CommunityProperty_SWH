@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etoak.mapper.OwnerMapper">
+    <insert id="addOwner">
+        INSERT INTO t_test_owner (name,location,idno,phone,level,publish_time) VALUES (#{name},#{location},#{idno},#{phone},#{level},#{publish_time})
+    </insert>
+    <select id="queryByName" resultType="owner">
+        select * from t_test_owner where name = #{name}
+    </select>
+    <select id="queryList" resultType="owner">
+        select * from t_test_owner where name like '%${name}%' and level = 1
+    </select>
+    <delete id="delOwner" >
+        DELETE FROM t_test_owner WHERE id = #{id}
+    </delete>
+    <update id="updateOwner" >
+        update t_test_owner set phone = #{phone} where id = #{id}
+    </update>
+    <select id="queryByNameAndPassword" resultType="owner">
+        select * from t_test_owner where name = #{name} AND password = #{password}
+    </select>
+    <insert id="addRepair">
+        INSERT INTO t_test_repair (name, location, remark, cost, publish_time, userid) VALUES (#{name}, #{location}, #{remark}, #{cost}, #{publish_time}, #{userid})
+    </insert>
+    <select id="queryRepairList" resultType="repair">
+        SELECT * from t_test_repair where location like '%${location}%'
+    </select>
+    <select id="queryThree" resultType="repair" >
+        select * from t_test_repair where publish_time BETWEEN '2019-12-25' AND '2019-12-27' ORDER BY publish_time
+    </select>
+
+    <select id="queryThirty" resultType="repair" >
+        select * from t_test_repair where publish_time BETWEEN '2019-11-27' AND '2019-12-27' ORDER BY publish_time
+    </select>
+</mapper>
